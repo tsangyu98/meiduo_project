@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'meiduo_admin.apps.MeiduoAdminConfig',
 
     # 完整导包路径
     # 'meiduo_mall.apps.users.apps.UsersConfig',
@@ -316,3 +317,8 @@ CRONJOBS = [
      '>> ' + os.path.join(os.path.dirname(BASE_DIR), 'logs/crontab.log'))
 ]
 CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'  # 支持中文
+
+REST_FRAMEWORK = {
+    # 指定DRF框架的异常处理函数
+    'EXCEPTION_HANDLER': 'meiduo_admin.utils.exceptions.exception_handler',
+}
