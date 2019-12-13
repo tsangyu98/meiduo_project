@@ -1,5 +1,7 @@
 from django.core.files.storage import Storage
+from fdfs_client.client import Fdfs_client
 from django.conf import settings
+from rest_framework.exceptions import APIException
 
 
 class FDFSStorage(Storage):
@@ -20,7 +22,15 @@ class FDFSStorage(Storage):
         name: 上传文件的名称
         content: 包含上传文件内容的File对象，content.read()获取上传文件内容
         """
-        pass
+        # 将文件上传到FDFS文件系统
+        client = Fdfs_client(self.client_conf)
+        # 上传
+        res = client.upload_by_buffer(content.read())
+        if res.get('Status') != 'Upload successed.':
+            raise APIException('上传文件到FDFS失败')
+        # 获取文件id
+        file_id = res.get('Remote file_id')
+        return file_id
 
     def exists(self, name):
         """

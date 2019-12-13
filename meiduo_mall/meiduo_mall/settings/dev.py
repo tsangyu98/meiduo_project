@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'meiduo_admin.apps.MeiduoAdminConfig',
+    'corsheaders',
 
     # 完整导包路径
     # 'meiduo_mall.apps.users.apps.UsersConfig',
@@ -77,7 +78,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+# CORS跨域请求设置
+CORS_ORIGIN_WHITELIST = (
+    # 备注：允许源地址`http://127.0.0.1:8080`向当前API服务器发起跨域请求
+    'http://127.0.0.1:8080',
+)
+CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
 ROOT_URLCONF = 'meiduo_mall.urls'
 
@@ -172,42 +181,42 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 CACHES = {
     "default": {  # 默认
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://172.16.179.139:6379/0",  # 可改：ip、port、db
+        "LOCATION": "redis://127.0.0.1:6379/0",  # 可改：ip、port、db
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "session": {  # session
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://172.16.179.139:6379/1",
+        "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "image_code": {  # 图形验证码
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://172.16.179.139:6379/2",
+        "LOCATION": "redis://127.0.0.1:6379/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "sms_code": {  # 图形验证码
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://172.16.179.139:6379/3",
+        "LOCATION": "redis://127.0.0.1:6379/3",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "history": {  # 浏览记录
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://172.16.179.139:6379/4",
+        "LOCATION": "redis://127.0.0.1:6379/4",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "cart": {  # 购物车
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://172.16.179.139:6379/5",
+        "LOCATION": "redis://127.0.0.1:6379/5",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -321,4 +330,19 @@ CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'  # 支持中文
 REST_FRAMEWORK = {
     # 指定DRF框架的异常处理函数
     'EXCEPTION_HANDLER': 'meiduo_admin.utils.exceptions.exception_handler',
+    # 引入JWT认证机制，当客户端将jwt token传递给服务器之后
+    # 此认证机制会自动校验jwt token的有效性，无效会直接返回401(未认证错误)
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+    # 全局分页类设置
+    'DEFAULT_PAGINATION_CLASS': 'meiduo_admin.utils.pagination.StandardResultPagination',
+}
+
+# JWT扩展配置
+JWT_AUTH = {
+    # 设置生成jwt token的有效时间
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
 }
