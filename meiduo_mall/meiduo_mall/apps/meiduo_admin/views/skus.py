@@ -15,6 +15,12 @@ class SKUImageViewSet(ModelViewSet):
     # 指定序列化器类
     serializer_class = SKUImageSerializer
 
+    def perform_destroy(self, instance):
+        # 删除FDFS中的图片
+        instance.image.delete(save=False)
+        # 删除数据表中的记录
+        instance.delete()
+
 
 # GET /meiduo_admin/skus/simple/
 class SKUSimpleView(ListAPIView):

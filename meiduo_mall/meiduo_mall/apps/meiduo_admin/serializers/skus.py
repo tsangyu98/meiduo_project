@@ -35,6 +35,18 @@ class SKUImageSerializer(serializers.ModelSerializer):
             sku.save()
         return sku_image
 
+    def update(self, instance, validated_data):
+        # 删除FDFS中原有的图片
+        instance.image.delete(save=False)
+        # 获取传递的数据
+        image = validated_data['image']
+        sku_id = validated_data['sku_id']
+        # 保存更新的图片
+        instance.image = image
+        instance.sku_id = sku_id
+        instance.save()
+        return instance
+
 
 class SKUSimpleSerializer(serializers.ModelSerializer):
     """SKU商品序列化器类"""

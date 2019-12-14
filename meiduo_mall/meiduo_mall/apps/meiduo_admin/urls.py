@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from meiduo_admin.views import orders, permissions
 from .views import users, statistical, skus, goods, channels, spus, specs, brands
-from rest_framework.routers import DefaultRouter, SimpleRouter
+from rest_framework.routers import SimpleRouter
 
 
 urlpatterns = [
